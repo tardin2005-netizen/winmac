@@ -74,13 +74,10 @@ async function installApps(selectedApps, onProgress, onError) {
 }
 
 function getBundledPath(filename) {
-  // Em produção: pasta bundled ao lado do executável
-  // Em dev: pasta bundled na raiz do projeto
-  const appDir = require('electron').app
-    ? require('path').dirname(require('electron').app.getPath('exe'))
-    : path.join(__dirname, '../../');
   const candidates = [
-    path.join(appDir, 'bundled', filename),
+    // Produção (extraResources): resources/bundled/ dentro do app instalado
+    path.join(process.resourcesPath || '', 'bundled', filename),
+    // Dev: bundled/ na raiz do projeto
     path.join(__dirname, '../../bundled', filename),
   ];
   for (const p of candidates) {

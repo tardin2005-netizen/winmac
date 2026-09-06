@@ -1,6 +1,6 @@
 {
   "name": "winmac",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WinMac — Instalador automático de softwares para Windows e macOS",
   "main": "src/main.js",
   "author": "WinMac",
@@ -45,7 +45,7 @@
         }
       ],
       "artifactName": "winmac-${version}-win.${ext}",
-      "requestedExecutionLevel": "requireAdministrator"
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
