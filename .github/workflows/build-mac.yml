@@ -1,0 +1,40 @@
+name: Build macOS DMG
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-mac:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node.js setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Download bundled installers
+        run: |
+          mkdir -p bundled
+          BASE="https://github.com/tardin2005-netizen/winmac/releases/download/v1-installers"
+          curl -L -o bundled/kaspersky-mac.dmg   "$BASE/kaspersky-mac.dmg"
+          curl -L -o bundled/clickshare-mac.dmg  "$BASE/clickshare-mac.dmg"
+
+      - name: Build macOS DMG
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npm run build:mac
+
+      - name: Upload DMG to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          files: dist/winmac-1.0.0-mac.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
