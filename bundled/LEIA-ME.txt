@@ -1,0 +1,36 @@
+============================================================
+  WinMac — Instaladores Bundled
+============================================================
+
+Esta pasta deve conter os instaladores dos apps que nao
+estao disponiveis no WinGet ou Homebrew.
+
+Os arquivos nao estao no GitHub por serem muito grandes.
+Coloque-os manualmente nesta pasta antes de rodar o app.
+
+------------------------------------------------------------
+ARQUIVOS NECESSARIOS:
+------------------------------------------------------------
+
+Windows:
+  kaspersky-win.exe       — Kaspersky Endpoint Security
+                            Baixe em: kaspersky.com/downloads
+
+  clickshare-win.exe      — ClickShare App
+                            Baixe em: barco.com/pt/products/clickshare-conferencing-collaboration/app
+
+macOS:
+  kaspersky-mac.dmg       — Kaspersky Endpoint Security for Mac
+                            Baixe em: kaspersky.com/downloads
+
+  clickshare-mac.dmg      — ClickShare App for Mac
+                            Baixe em: barco.com/pt/products/clickshare-conferencing-collaboration/app
+
+  chrome-remote-desktop-mac.dmg  — Google Remote Desktop Host
+                                   Baixe em: remotedesktop.google.com/access
+
+------------------------------------------------------------
+NOTA:
+  Sem esses arquivos, os apps marcados como "Incluido"
+  no WinMac vao mostrar erro ao tentar instalar.
+------------------------------------------------------------

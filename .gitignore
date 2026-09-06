@@ -12,5 +12,8 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Instaladores bundled (arquivos grandes, não vão pro GitHub)
-bundled/
+# Instaladores bundled (grandes demais para o GitHub — coloque manualmente)
+bundled/*.exe
+bundled/*.dmg
+bundled/*.msi
+bundled/*.pkg

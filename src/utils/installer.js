@@ -107,7 +107,9 @@ function installOne(app, onProgress, onError) {
       }
       const installerPath = getBundledPath(filename);
       if (!installerPath) {
-        onError(`❌ Instalador bundled não encontrado: ${filename}\n`);
+        const dlScript = process.platform === 'win32' ? 'BAIXAR_BUNDLED.bat' : 'BAIXAR_BUNDLED.sh';
+        onError(`❌ Instalador não encontrado: ${filename}\n`);
+        onProgress(`   ⬇️  Execute "${dlScript}" na pasta do WinMac para baixar os instaladores.\n`);
         resolve(); return;
       }
       onProgress(`   Arquivo local: ${installerPath}\n`);

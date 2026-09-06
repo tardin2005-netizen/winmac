@@ -42,8 +42,7 @@
           "homebrewId": null,
           "bundled": true,
           "bundledWin": null,
-          "bundledMac": null,
-          "macNote": "Instale via Chrome em remotedesktop.google.com/access"
+          "bundledMac": "chrome-remote-desktop-mac.dmg"
         }
       ]
     },
