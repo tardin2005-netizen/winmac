@@ -1,0 +1,70 @@
+{
+  "name": "winmac",
+  "version": "1.0.0",
+  "description": "WinMac — Instalador automático de softwares para Windows e macOS",
+  "main": "src/main.js",
+  "author": "WinMac",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:all": "electron-builder -mw",
+    "dist": "electron-builder --publish never"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.winmac.installer",
+    "productName": "WinMac",
+    "executableName": "winmac",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bundled/",
+        "to": "bundled/",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "winmac-${version}-win.${ext}",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "WinMac"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.utilities",
+      "artifactName": "winmac-${version}-mac.${ext}"
+    },
+    "dmg": {
+      "title": "WinMac",
+      "contents": [
+        { "x": 110, "y": 150, "type": "file" },
+        { "x": 240, "y": 150, "type": "link", "path": "/Applications" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WinMac</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue: #1A6FD4;
+      --blue-light: #E8F0FB;
+      --blue-row: #C8DEFF;
+      --sidebar-bg: #0D1B2A;
+      --sidebar-hover: #162333;
+      --sidebar-active: #1A6FD4;
+      --bg: #F5F5F7;
+      --card: #FFFFFF;
+      --border: #E2E2E7;
+      --text: #1A1A1A;
+      --muted: #888;
+      --green: #30D158;
+      --red: #FF453A;
+      --yellow: #FFD60A;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .window {
+      display: flex;
+      height: 100vh;
+      background: var(--bg);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 210px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-top {
+      padding: 18px 16px 14px;
+    }
+
+    /* Traffic lights */
+    .traffic-lights {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 16px;
+    }
+
+    .tl {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .tl.close  { background: #FF5F57; }
+    .tl.min    { background: #FEBC2E; }
+    .tl.max    { background: #28C840; }
+
+    .sidebar-brand {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 1.5px;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .sidebar-cats {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 0;
+    }
+
+    .cat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 0;
+    }
+
+    .cat-item:hover { background: var(--sidebar-hover); }
+    .cat-item.active { background: var(--sidebar-active); }
+
+    .cat-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .cat-item.active .cat-icon { background: rgba(255,255,255,0.22); }
+
+    .cat-name {
+      flex: 1;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .cat-item.active .cat-name { color: #fff; }
+
+    .cat-count {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      min-width: 18px;
+      text-align: right;
+    }
+
+    .cat-item.active .cat-count { color: rgba(255,255,255,0.85); }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--card);
+    }
+
+    /* OS Toggle header */
+    .os-header {
+      padding: 16px 20px 12px;
+      display: flex;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .os-toggle {
+      display: flex;
+      gap: 12px;
+    }
+
+    .os-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 84px;
+      height: 56px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .os-btn:hover { border-color: #bbb; background: #EBEBEF; }
+
+    .os-btn.active {
+      border-color: var(--blue);
+      background: var(--blue-light);
+      box-shadow: 0 0 0 1px var(--blue);
+    }
+
+    .os-btn svg { width: 28px; height: 28px; }
+
+    .os-btn.active svg { fill: var(--blue); }
+    .os-btn:not(.active) svg { fill: #888; }
+
+    /* App list area */
+    .app-scroll {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .app-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid #F0F0F5;
+      cursor: pointer;
+      gap: 12px;
+      transition: background 0.12s;
+    }
+
+    .app-row:hover { background: #FAFAFA; }
+
+    .app-row.selected { background: var(--blue-row); }
+    .app-row.selected:hover { background: #CCE0FF; }
+
+    .app-chk {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .app-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      background: #f0f0f5;
+    }
+
+    .app-meta { flex: 1; min-width: 0; }
+
+    .app-row.selected .app-name { color: #005FCC; }
+
+    .app-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-version {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: 8px;
+      flex-shrink: 0;
+      min-width: 48px;
+      text-align: right;
+    }
+
+    .app-row.unavailable { opacity: 0.4; }
+    .app-row.unavailable .app-chk { cursor: not-allowed; }
+    .badge-bundled {
+      font-size: 10px;
+      background: #1A6FD4;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .badge-download {
+      font-size: 10px;
+      background: #2ca05a;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .badge-unavailable {
+      font-size: 10px;
+      background: #eee;
+      color: #999;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      background: var(--card);
+    }
+
+    .update-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .update-btn:hover { background: #ebebef; }
+
+    .install-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--blue);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: background 0.2s;
+      min-height: 44px;
+    }
+
+    .install-btn:hover:not(:disabled) { background: #006EDB; }
+    .install-btn:disabled { background: #B0CAEB; cursor: not-allowed; }
+
+    .install-btn-label {
+      flex: 1;
+      padding: 0 16px;
+      color: white;
+    }
+
+    .install-btn-title {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .install-btn-sub {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .install-btn-arrow {
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid rgba(255,255,255,0.2);
+      align-self: stretch;
+      color: white;
+      font-size: 18px;
+    }
+
+    .cancel-btn {
+      padding: 9px 14px;
+      background: #FF453A;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+    }
+
+    /* ── CONSOLE OVERLAY ── */
+    .console-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: flex-end;
+      z-index: 100;
+    }
+
+    .console-overlay.open { display: flex; }
+
+    .console-panel {
+      width: 100%;
+      height: 55%;
+      background: #1A1A1A;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .console-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .console-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .console-close-btn {
+      font-size: 12px;
+      color: #888;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .console-close-btn:hover { background: #2a2a2a; color: #fff; }
+
+    .console-output {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px;
+      font-family: 'SF Mono', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .log-line { color: #d4d4d4; word-break: break-all; }
+    .log-line.success { color: #30D158; }
+    .log-line.error { color: #FF453A; }
+    .log-line.info { color: #5AC8FA; }
+    .log-line.warn { color: #FFD60A; }
+
+    .progress-row {
+      padding: 10px 16px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .progress-track {
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      width: 0%;
+      transition: width 0.4s;
+      border-radius: 2px;
+    }
+
+    .progress-text {
+      font-size: 11px;
+      color: #666;
+    }
+
+    /* Search bar */
+    .search-bar {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: var(--bg);
+      outline: none;
+      color: var(--text);
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+
+    .search-input:focus { border-color: var(--blue); }
+    .search-input::placeholder { color: #bbb; }
+
+    .search-icon {
+      position: absolute;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .search-results-header {
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+    .console-output::-webkit-scrollbar-thumb { background: #333; }
+  </style>
+</head>
+<body>
+
+<div class="window">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="traffic-lights">
+        <div class="tl close"></div>
+        <div class="tl min"></div>
+        <div class="tl max"></div>
+      </div>
+      <div class="sidebar-brand">WinMac</div>
+    </div>
+    <nav class="sidebar-cats" id="sidebarCats"></nav>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- OS TOGGLE -->
+    <div class="os-header">
+      <div class="os-toggle">
+        <button class="os-btn active" id="btnWin" onclick="selectOS('win')" title="Windows (WinGet)">
+          <svg viewBox="0 0 24 24"><path d="M3 5.557L10.025 4.5v6.956H3V5.557zM11.025 4.352L20.998 3v8.456H11.025V4.352zM3 12.544h7.025V19.5L3 18.443V12.544zM11.025 12.544H20.998V21L11.025 19.648V12.544z"/></svg>
+        </button>
+        <button class="os-btn" id="btnMac" onclick="selectOS('mac')" title="macOS (Homebrew)">
+          <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SEARCH BAR -->
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar apps..." oninput="onSearch(this.value)">
+    </div>
+    <div class="search-results-header" id="searchHeader" style="display:none"></div>
+
+    <!-- APP LIST -->
+    <div class="app-scroll" id="appList"></div>
+
+    <!-- BOTTOM BAR -->
+    <div class="bottom-bar">
+      <button class="update-btn" onclick="deselectAll()">✕ Limpar</button>
+      <button class="update-btn" onclick="selectAllCurrent()">✓ Todos</button>
+      <button class="install-btn" id="installBtn" disabled onclick="startInstall()">
+        <div class="install-btn-label">
+          <div class="install-btn-title" id="installTitle">Selecione apps</div>
+          <div class="install-btn-sub" id="installSub">Nenhum selecionado</div>
+        </div>
+        <div class="install-btn-arrow">›</div>
+      </button>
+      <button class="cancel-btn" id="cancelBtn" onclick="cancelInstall()">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONSOLE OVERLAY -->
+<div class="console-overlay" id="consoleOverlay">
+  <div class="console-panel">
+    <div class="console-top">
+      <span class="console-title">📋 Log de Instalação</span>
+      <button class="console-close-btn" onclick="closeConsole()">Fechar ✕</button>
+    </div>
+    <div class="console-output" id="consoleOutput"></div>
+    <div class="progress-row" id="progressRow" style="display:none">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text" id="progressText">Instalando...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Estado ──────────────────────────────────────
+const state = {
+  currentOS: 'win',
+  currentCat: null,
+  catalog: [],
+  selected: new Set(),
+  installing: false,
+  searchQuery: ''
+};
+
+const CAT_ICONS = {
+  browsers:'🌐', remote:'🖥️', security:'🔒', productivity:'📊',
+  media:'🎬', utilities:'🛠️', 'dev-tools':'⚒️'
+};
+
+const APP_ICONS = {
+  chrome:'🌐', firefox:'🦊', edge:'🌀', brave:'🦁',
+  anydesk:'🖥️', teamviewer:'🔗', zoom:'📹', clickshare:'📡', rdp:'🖧', 'chrome-remote-desktop':'🖥️',
+  googledrive:'☁️',
+  kaspersky:'🛡️', malwarebytes:'🔬', bitwarden:'🔑', veracrypt:'🔐', 'vpn-express':'🌐',
+  notion:'📝', slack:'💬', teams:'💼', discord:'🎮', telegram:'✈️', whatsapp:'💬',
+  vlc:'🎬', spotify:'🎵', gimp:'🎨', audacity:'🎙️', obs:'🎥',
+  '7zip':'📦', winrar:'🗜️', ccleaner:'🧹', rufus:'💾', everything:'🔍', notepadpp:'📄',
+  vscode:'💻', git:'🔀', docker:'🐳', nodejs:'🟢', python:'🐍', postman:'📡'
+};
+
+const CATALOG_FALLBACK = {"categories":[{"id":"browsers","name":"Navegadores","apps":[{"id":"chrome","name":"Google Chrome","description":"Google LLC","wingetId":"Google.Chrome","homebrewId":"google-chrome"}]},{"id":"remote","name":"Acesso Remoto","apps":[{"id":"anydesk","name":"AnyDesk","description":"AnyDesk Software GmbH","wingetId":"AnyDesk.AnyDesk","homebrewId":"anydesk"},{"id":"clickshare","name":"ClickShare App","description":"Barco","wingetId":null,"homebrewId":null,"bundled":true,"bundledWin":"clickshare-win.exe","bundledMac":"clickshare-mac.dmg"},{"id":"chrome-remote-desktop","name":"Google Remote Desktop","description":"Google LLC","wingetId":"Google.ChromeRemoteDesktopHost","homebrewId":"chrome-remote-desktop-host"}]},{"id":"security","name":"Segurança & Antivírus","apps":[{"id":"kaspersky","name":"Kaspersky Endpoint Security","description":"Kaspersky Lab","wingetId":null,"homebrewId":null,"bundled":true,"bundledWin":"kaspersky-win.exe","bundledMac":"kaspersky-mac.dmg"}]},{"id":"productivity","name":"Produtividade","apps":[{"id":"whatsapp","name":"WhatsApp","description":"WhatsApp LLC","wingetId":"9NKSQGP7F2NH","homebrewId":"whatsapp"}]},{"id":"media","name":"Mídia & Multimídia","apps":[{"id":"vlc","name":"VLC Media Player","description":"VideoLAN","wingetId":"VideoLAN.VLC","homebrewId":"vlc"},{"id":"gimp","name":"GIMP","description":"The GIMP Team","wingetId":"GIMP.GIMP","homebrewId":"gimp"}]},{"id":"utilities","name":"Utilitários","apps":[{"id":"7zip","name":"7-Zip","description":"Igor Pavlov · Mac: Keka","wingetId":null,"homebrewId":"keka"},{"id":"winrar","name":"WinRAR","description":"RARLab · Somente Windows","wingetId":"RARLab.WinRAR","homebrewId":null}]},{"id":"dev-tools","name":"Dev Tools","apps":[{"id":"vscode","name":"Visual Studio Code","description":"Microsoft Corporation","wingetId":"Microsoft.VisualStudioCode","homebrewId":"visual-studio-code"},{"id":"git","name":"Git","description":"The Git Development Community","wingetId":"Git.Git","homebrewId":"git"},{"id":"docker","name":"Docker Desktop","description":"Docker Inc","wingetId":"Docker.DockerDesktop","homebrewId":"docker"},{"id":"nodejs","name":"Node.js","description":"OpenJS Foundation","wingetId":"OpenJS.NodeJS","homebrewId":"node"},{"id":"python","name":"Python 3","description":"Python Software Foundation","wingetId":"Python.Python.3.12","homebrewId":"python"},{"id":"postman","name":"Postman","description":"Postman Inc","wingetId":"Postman.Postman","homebrewId":"postman"}]}]};
+
+async function getCatalog() {
+  if (window.api) return window.api.getAppsCatalog();
+  try { const r = await fetch('./assets/apps-catalog.json'); if (r.ok) return r.json(); } catch {}
+  return CATALOG_FALLBACK;
+}
+
+function hasApi() { return !!window.api; }
+
+async function init() {
+  try {
+    const catalog = await getCatalog();
+    state.catalog = catalog.categories || [];
+  } catch (e) { state.catalog = []; }
+  renderSidebar();
+  if (state.catalog.length) selectCat(state.catalog[0].id);
+  if (hasApi()) window.api.onInstallProgress(onProgress);
+}
+
+function renderSidebar() {
+  const el = document.getElementById('sidebarCats');
+  el.innerHTML = '';
+  state.catalog.forEach(cat => {
+    const selCount = cat.apps.filter(a => state.selected.has(a.id)).length;
+    const div = document.createElement('div');
+    div.className = 'cat-item' + (cat.id === state.currentCat ? ' active' : '');
+    div.dataset.id = cat.id;
+    div.innerHTML = `<div class="cat-icon">${CAT_ICONS[cat.id]||'📦'}</div><span class="cat-name">${cat.name}</span><span class="cat-count">${selCount > 0 ? selCount : cat.apps.length}</span>`;
+    div.onclick = () => selectCat(cat.id);
+    el.appendChild(div);
+  });
+}
+
+function selectCat(id) {
+  state.currentCat = id;
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.id === id));
+  const cat = state.catalog.find(c => c.id === id);
+  if (cat) renderApps(cat);
+}
+
+function renderApps(cat) {
+  const el = document.getElementById('appList');
+  el.innerHTML = '';
+  cat.apps.forEach(app => {
+    const isSelected = state.selected.has(app.id);
+    const pkgId = state.currentOS === 'win' ? app.wingetId : app.homebrewId;
+    const unavailable = !pkgId && !app.bundled && !app.downloadUrl;
+    const row = document.createElement('div');
+    row.className = 'app-row' + (isSelected && !unavailable ? ' selected' : '') + (unavailable ? ' unavailable' : '');
+    row.dataset.id = app.id;
+    const versionCell = unavailable
+      ? `<span class="badge-unavailable">Não disponível</span>`
+      : app.bundled
+        ? `<span class="badge-bundled">Incluído</span>`
+        : app.downloadUrl
+          ? `<span class="badge-download">Download</span>`
+          : `<div class="app-version">${pkgId.split('.').pop()}</div>`;
+    row.innerHTML = `<input type="checkbox" class="app-chk" data-id="${app.id}" ${isSelected && !unavailable ? 'checked' : ''} ${unavailable ? 'disabled' : ''}><div class="app-logo">${APP_ICONS[app.id]||CAT_ICONS[cat.id]||'📦'}</div><div class="app-meta"><div class="app-name">${app.name}</div><div class="app-sub">${app.description}</div></div>${versionCell}`;
+    if (!unavailable) {
+      const chk = row.querySelector('.app-chk');
+      chk.addEventListener('change', e => { e.stopPropagation(); toggleApp(app.id, chk.checked, row); });
+      row.addEventListener('click', e => { if (e.target === chk) return; chk.checked = !chk.checked; toggleApp(app.id, chk.checked, row); });
+    }
+    el.appendChild(row);
+  });
+}
+
+function toggleApp(id, on, rowEl) {
+  if (on) state.selected.add(id); else state.selected.delete(id);
+  rowEl.classList.toggle('selected', on);
+  updateBottomBar(); renderSidebar();
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.id === state.currentCat));
+  if (state.searchQuery) {
+    const chk = rowEl.querySelector('.app-chk');
+    if (chk) chk.checked = on;
+  }
+}
+
+function selectAllCurrent() {
+  const cat = state.catalog.find(c => c.id === state.currentCat);
+  if (!cat) return;
+  cat.apps.forEach(a => state.selected.add(a.id));
+  renderApps(cat); updateBottomBar(); renderSidebar();
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.id === state.currentCat));
+}
+
+function deselectAll() {
+  state.selected.clear();
+  const cat = state.catalog.find(c => c.id === state.currentCat);
+  if (cat) renderApps(cat);
+  updateBottomBar(); renderSidebar();
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.id === state.currentCat));
+}
+
+function selectOS(os) {
+  state.currentOS = os;
+  document.getElementById('btnWin').classList.toggle('active', os === 'win');
+  document.getElementById('btnMac').classList.toggle('active', os === 'mac');
+  if (state.searchQuery) { renderSearchResults(state.searchQuery); return; }
+  const cat = state.catalog.find(c => c.id === state.currentCat);
+  if (cat) renderApps(cat);
+}
+
+// ── Search ───────────────────────────────────────
+function onSearch(query) {
+  state.searchQuery = query.trim().toLowerCase();
+  const header = document.getElementById('searchHeader');
+  if (state.searchQuery) {
+    renderSearchResults(state.searchQuery);
+    header.style.display = 'block';
+  } else {
+    header.style.display = 'none';
+    const cat = state.catalog.find(c => c.id === state.currentCat);
+    if (cat) renderApps(cat);
+  }
+}
+
+function renderSearchResults(query) {
+  const el = document.getElementById('appList');
+  el.innerHTML = '';
+  let found = 0;
+  state.catalog.forEach(cat => {
+    cat.apps.forEach(app => {
+      if (!app.name.toLowerCase().includes(query) &&
+          !app.description.toLowerCase().includes(query) &&
+          !(app.wingetId||'').toLowerCase().includes(query) &&
+          !(app.homebrewId||'').toLowerCase().includes(query)) return;
+      found++;
+      const isSelected = state.selected.has(app.id);
+      const pkgId = state.currentOS === 'win' ? app.wingetId : app.homebrewId;
+      const row = document.createElement('div');
+      row.className = 'app-row' + (isSelected ? ' selected' : '');
+      row.dataset.id = app.id;
+      row.innerHTML = `<input type="checkbox" class="app-chk" data-id="${app.id}" ${isSelected ? 'checked' : ''}><div class="app-logo">${APP_ICONS[app.id]||CAT_ICONS[cat.id]||'📦'}</div><div class="app-meta"><div class="app-name">${app.name}</div><div class="app-sub">${app.description} · <span style="color:#bbb">${cat.name}</span></div></div><div class="app-version">${pkgId ? pkgId.split('.').pop() : '—'}</div>`;
+      const chk = row.querySelector('.app-chk');
+      chk.addEventListener('change', e => { e.stopPropagation(); toggleApp(app.id, chk.checked, row); });
+      row.addEventListener('click', e => { if (e.target === chk) return; chk.checked = !chk.checked; toggleApp(app.id, chk.checked, row); });
+      el.appendChild(row);
+    });
+  });
+  const header = document.getElementById('searchHeader');
+  if (found === 0) {
+    header.textContent = `Nenhum resultado para "${state.searchQuery}"`;
+    el.innerHTML = '<div style="padding:40px;text-align:center;color:#aaa;font-size:14px">😕 Nenhum app encontrado</div>';
+  } else {
+    header.textContent = `${found} resultado${found !== 1 ? 's' : ''} para "${state.searchQuery}"`;
+  }
+}
+
+function updateBottomBar() {
+  const n = state.selected.size;
+  const btn = document.getElementById('installBtn');
+  btn.disabled = n === 0 || state.installing;
+  if (n === 0) {
+    document.getElementById('installTitle').textContent = 'Selecione apps para instalar';
+    document.getElementById('installSub').textContent = 'Nenhum selecionado';
+  } else {
+    document.getElementById('installTitle').textContent = `INSTALL (${n} ${n === 1 ? 'item' : 'itens'} selected)`;
+    document.getElementById('installSub').textContent = `Tempo estimado: ${Math.max(3, n * 2)}min`;
+  }
+}
+
+async function startInstall() {
+  if (state.installing || state.selected.size === 0) return;
+  const apps = [];
+  state.catalog.forEach(cat => cat.apps.forEach(app => { if (state.selected.has(app.id)) apps.push({...app, targetOS: state.currentOS}); }));
+  state.installing = true;
+  document.getElementById('installBtn').disabled = true;
+  document.getElementById('installBtn').querySelector('.install-btn-title').textContent = '⏳ Instalando...';
+  document.getElementById('cancelBtn').style.display = 'block';
+  openConsole();
+  log(`🚀 Instalando ${apps.length} app(s) — ${state.currentOS === 'win' ? 'Windows' : 'macOS'}`, 'info');
+  log('─'.repeat(48), 'info');
+  document.getElementById('progressRow').style.display = 'block';
+  const result = hasApi()
+    ? await window.api.installApps(apps)
+    : await new Promise(r => setTimeout(() => r({ success: true }), 2000));
+  state.installing = false;
+  document.getElementById('cancelBtn').style.display = 'none';
+  document.getElementById('progressRow').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0%';
+  updateBottomBar();
+  log('─'.repeat(48), result.success ? 'success' : 'error');
+  log(result.success ? '✅ Instalação concluída!' : '❌ ' + result.message, result.success ? 'success' : 'error');
+}
+
+async function cancelInstall() {
+  if (hasApi()) await window.api.cancelInstallation();
+  log('⚠️ Cancelado pelo usuário.', 'warn');
+}
+
+function openConsole() { document.getElementById('consoleOverlay').classList.add('open'); }
+function closeConsole() { document.getElementById('consoleOverlay').classList.remove('open'); }
+
+let pct = 0;
+function onProgress(data) {
+  const text = data.data.trim();
+  if (!text) return;
+  log(text, data.type === 'stderr' ? 'error' : 'log');
+  pct = Math.min(pct + 2, 94);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `Instalando... ${pct}%`;
+}
+
+function log(msg, type = 'log') {
+  const out = document.getElementById('consoleOutput');
+  const div = document.createElement('div');
+  div.className = 'log-line ' + type;
+  div.textContent = msg;
+  out.appendChild(div);
+  out.scrollTop = out.scrollHeight;
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
