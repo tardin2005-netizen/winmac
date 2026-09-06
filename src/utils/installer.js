@@ -101,7 +101,8 @@ function installOne(app, onProgress, onError) {
     if (app.bundled) {
       const filename = os === 'win' ? app.bundledWin : app.bundledMac;
       if (!filename) {
-        onProgress(`\n⚠️  ${app.name} não tem instalador bundled para ${os === 'win' ? 'Windows' : 'macOS'}. Pulando.\n`);
+        const note = app.macNote || `${app.name} não tem instalador automático para ${os === 'win' ? 'Windows' : 'macOS'}.`;
+        onProgress(`\nⓘ  ${note}\n`);
         resolve(); return;
       }
       const installerPath = getBundledPath(filename);
@@ -160,7 +161,11 @@ function installOne(app, onProgress, onError) {
       ];
     } else {
       command = '/bin/bash';
-      args = ['-c', `brew install --cask "${app.homebrewId}" --quiet 2>&1`];
+      // homebrewFormula = true → fórmula (git, node, python); false/ausente → cask
+      const brewCmd = app.homebrewFormula
+        ? `brew install "${app.homebrewId}" --quiet 2>&1`
+        : `brew install --cask "${app.homebrewId}" --quiet 2>&1`;
+      args = ['-c', brewCmd];
     }
 
     const pkgId = os === 'win' ? app.wingetId : app.homebrewId;

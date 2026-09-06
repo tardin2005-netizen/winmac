@@ -39,7 +39,11 @@
           "name": "Google Remote Desktop",
           "description": "Google LLC",
           "wingetId": "Google.ChromeRemoteDesktopHost",
-          "homebrewId": "chrome-remote-desktop-host"
+          "homebrewId": null,
+          "bundled": true,
+          "bundledWin": null,
+          "bundledMac": null,
+          "macNote": "Instale via Chrome em remotedesktop.google.com/access"
         }
       ]
     },
@@ -128,7 +132,8 @@
           "name": "Git",
           "description": "The Git Development Community",
           "wingetId": "Git.Git",
-          "homebrewId": "git"
+          "homebrewId": "git",
+          "homebrewFormula": true
         },
         {
           "id": "docker",
@@ -142,14 +147,16 @@
           "name": "Node.js",
           "description": "OpenJS Foundation",
           "wingetId": "OpenJS.NodeJS",
-          "homebrewId": "node"
+          "homebrewId": "node",
+          "homebrewFormula": true
         },
         {
           "id": "python",
           "name": "Python 3",
           "description": "Python Software Foundation",
           "wingetId": "Python.Python.3.12",
-          "homebrewId": "python"
+          "homebrewId": "python",
+          "homebrewFormula": true
         },
         {
           "id": "postman",
