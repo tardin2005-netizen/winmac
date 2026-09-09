@@ -94,6 +94,23 @@ ipcMain.handle('cancel-installation', async () => {
   return { success: true };
 });
 
+ipcMain.handle('open-termo', () => {
+  const termoWindow = new BrowserWindow({
+    width: 820,
+    height: 700,
+    minWidth: 600,
+    minHeight: 500,
+    title: 'Termo de Responsabilidade',
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+  termoWindow.loadFile(path.join(__dirname, 'assets/termo.html'));
+  termoWindow.setMenuBarVisibility(false);
+  return { success: true };
+});
+
 // Inicializar app
 app.on('ready', createWindow);
 

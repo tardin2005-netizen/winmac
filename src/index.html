@@ -979,7 +979,13 @@ async function cancelInstall() {
 
 function openConsole() { document.getElementById('consoleOverlay').classList.add('open'); }
 function closeConsole() { document.getElementById('consoleOverlay').classList.remove('open'); }
-function openTermo() { document.getElementById('termoOverlay').classList.add('open'); }
+function openTermo() {
+  if (hasApi() && window.api.openTermo) {
+    window.api.openTermo();
+  } else {
+    document.getElementById('termoOverlay').classList.add('open');
+  }
+}
 function closeTermo() { document.getElementById('termoOverlay').classList.remove('open'); }
 
 let pct = 0;

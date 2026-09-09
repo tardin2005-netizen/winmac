@@ -24,5 +24,8 @@ contextBridge.exposeInMainWorld('api', {
   // Remover listener
   removeInstallProgressListener: () => {
     ipcRenderer.removeAllListeners('install-progress');
-  }
+  },
+
+  // Abrir gerador de Termo de Responsabilidade
+  openTermo: () => ipcRenderer.invoke('open-termo')
 });
