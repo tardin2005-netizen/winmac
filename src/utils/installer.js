@@ -30,14 +30,21 @@ function checkDependencies() {
   return { ready: true, message: 'Sistema pronto.', needsInstall: false };
 }
 
+const CATALOG_FALLBACK = {"categories":[{"id":"browsers","name":"Navegadores","apps":[{"id":"chrome","name":"Google Chrome","description":"Google LLC","wingetId":"Google.Chrome","homebrewId":"google-chrome"},{"id":"firefox","name":"Mozilla Firefox","description":"Mozilla Corporation","wingetId":"Mozilla.Firefox","homebrewId":"firefox"},{"id":"edge","name":"Microsoft Edge","description":"Microsoft Corporation","wingetId":"Microsoft.Edge","homebrewId":"microsoft-edge"},{"id":"brave","name":"Brave Browser","description":"Brave Software Inc","wingetId":"BraveSoftware.BraveBrowser","homebrewId":"brave-browser"}]},{"id":"remote","name":"Acesso Remoto","apps":[{"id":"anydesk","name":"AnyDesk","description":"AnyDesk Software GmbH","wingetId":"AnyDesk.AnyDesk","homebrewId":"anydesk"},{"id":"clickshare","name":"ClickShare App","description":"Barco","wingetId":null,"homebrewId":null,"bundled":true,"bundledWin":"clickshare-win.exe","bundledMac":"clickshare-mac.dmg"},{"id":"chrome-remote-desktop","name":"Google Remote Desktop","description":"Google LLC","wingetId":"Google.ChromeRemoteDesktopHost","homebrewId":null,"bundled":true,"bundledWin":null,"bundledMac":"chrome-remote-desktop-mac.dmg"}]},{"id":"security","name":"Segurança & Antivírus","apps":[{"id":"kaspersky","name":"Kaspersky Endpoint Security","description":"Kaspersky Lab","wingetId":null,"homebrewId":null,"bundled":true,"bundledWin":"kaspersky-win.exe","bundledMac":"kaspersky-mac.dmg"}]},{"id":"productivity","name":"Produtividade","apps":[{"id":"whatsapp","name":"WhatsApp","description":"WhatsApp LLC","wingetId":"9NKSQGP7F2NH","homebrewId":"whatsapp"},{"id":"notion","name":"Notion","description":"Notion Labs Inc","wingetId":"Notion.Notion","homebrewId":"notion"},{"id":"slack","name":"Slack","description":"Salesforce, Inc","wingetId":"SlackTechnologies.Slack","homebrewId":"slack"},{"id":"teams","name":"Microsoft Teams","description":"Microsoft Corporation","wingetId":"Microsoft.Teams","homebrewId":"microsoft-teams"}]},{"id":"media","name":"Mídia & Multimídia","apps":[{"id":"vlc","name":"VLC Media Player","description":"VideoLAN","wingetId":"VideoLAN.VLC","homebrewId":"vlc"},{"id":"spotify","name":"Spotify","description":"Spotify AB","wingetId":"Spotify.Spotify","homebrewId":"spotify"},{"id":"gimp","name":"GIMP","description":"The GIMP Team","wingetId":"GIMP.GIMP","homebrewId":"gimp"},{"id":"obs","name":"OBS Studio","description":"OBS Project","wingetId":"OBSProject.OBSStudio","homebrewId":"obs"}]},{"id":"utilities","name":"Utilitários","apps":[{"id":"7zip","name":"7-Zip","description":"Igor Pavlov · Mac: Keka","wingetId":null,"homebrewId":"keka"},{"id":"winrar","name":"WinRAR","description":"RARLab · Somente Windows","wingetId":"RARLab.WinRAR","homebrewId":null},{"id":"ccleaner","name":"CCleaner","description":"Piriform Software Ltd","wingetId":"Piriform.CCleaner","homebrewId":"ccleaner"},{"id":"rufus","name":"Rufus","description":"Pete Batard · Somente Windows","wingetId":"pbatard.rufus","homebrewId":null}]},{"id":"dev-tools","name":"Dev Tools","apps":[{"id":"vscode","name":"Visual Studio Code","description":"Microsoft Corporation","wingetId":"Microsoft.VisualStudioCode","homebrewId":"visual-studio-code"},{"id":"git","name":"Git","description":"The Git Development Community","wingetId":"Git.Git","homebrewId":"git"},{"id":"docker","name":"Docker Desktop","description":"Docker Inc","wingetId":"Docker.DockerDesktop","homebrewId":"docker"},{"id":"nodejs","name":"Node.js","description":"OpenJS Foundation","wingetId":"OpenJS.NodeJS","homebrewId":"node"},{"id":"python","name":"Python 3","description":"Python Software Foundation","wingetId":"Python.Python.3.12","homebrewId":"python"},{"id":"postman","name":"Postman","description":"Postman Inc","wingetId":"Postman.Postman","homebrewId":"postman"}]}]};
+
 function loadAppsCatalog() {
-  try {
-    const catalogPath = path.join(__dirname, '../assets/apps-catalog.json');
-    return JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
-  } catch (e) {
-    console.error('Erro ao carregar catálogo:', e);
-    return { categories: [] };
+  const candidates = [
+    path.join(__dirname, '../assets/apps-catalog.json'),
+    path.join(process.resourcesPath || '', 'app', 'src', 'assets', 'apps-catalog.json'),
+  ];
+  for (const catalogPath of candidates) {
+    try {
+      const data = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
+      if (data && data.categories && data.categories.length > 0) return data;
+    } catch {}
   }
+  console.warn('apps-catalog.json não encontrado, usando catálogo embutido.');
+  return CATALOG_FALLBACK;
 }
 
 async function installApps(selectedApps, onProgress, onError) {

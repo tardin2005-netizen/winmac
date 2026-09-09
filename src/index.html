@@ -494,6 +494,141 @@
       flex-shrink: 0;
     }
 
+    /* ── SIDEBAR FOOTER ── */
+    .sidebar-footer {
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 0 8px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.3);
+      padding: 0 16px 6px;
+      text-transform: uppercase;
+    }
+
+    .sidebar-tool-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .sidebar-tool-item:hover { background: var(--sidebar-hover); }
+
+    .sidebar-tool-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-tool-name {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    /* ── TERMO MODAL ── */
+    .termo-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .termo-overlay.open { display: flex; }
+
+    .termo-panel {
+      width: 560px;
+      max-width: 92vw;
+      max-height: 80vh;
+      background: #fff;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .termo-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .termo-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .termo-close-btn {
+      font-size: 12px;
+      color: var(--muted);
+      background: #f0f0f5;
+      border: none;
+      cursor: pointer;
+      padding: 5px 11px;
+      border-radius: 6px;
+    }
+
+    .termo-close-btn:hover { background: #e0e0e8; }
+
+    .termo-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .termo-body h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 16px 0 6px;
+    }
+
+    .termo-body h3:first-child { margin-top: 0; }
+
+    .termo-body p { margin-bottom: 10px; color: #444; }
+
+    .termo-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .termo-ok-btn {
+      padding: 9px 24px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .termo-ok-btn:hover { background: #006EDB; }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -516,6 +651,13 @@
       <div class="sidebar-brand">WinMac</div>
     </div>
     <nav class="sidebar-cats" id="sidebarCats"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-section-label">Ferramentas</div>
+      <div class="sidebar-tool-item" onclick="openTermo()">
+        <div class="sidebar-tool-icon">📄</div>
+        <span class="sidebar-tool-name">Termo de Resp.</span>
+      </div>
+    </div>
   </aside>
 
   <!-- MAIN -->
@@ -576,6 +718,41 @@
   </div>
 </div>
 
+<!-- TERMO MODAL -->
+<div class="termo-overlay" id="termoOverlay">
+  <div class="termo-panel">
+    <div class="termo-header">
+      <span class="termo-title">📄 Termo de Responsabilidade</span>
+      <button class="termo-close-btn" onclick="closeTermo()">Fechar ✕</button>
+    </div>
+    <div class="termo-body">
+      <h3>1. Aceitação dos Termos</h3>
+      <p>Ao utilizar o WinMac Installer, você concorda com os termos descritos neste documento. O uso do software implica a aceitação integral destas condições.</p>
+
+      <h3>2. Natureza do Software</h3>
+      <p>O WinMac é uma ferramenta auxiliar de instalação que facilita o download e instalação de aplicativos de terceiros. O WinMac não desenvolve, mantém nem se responsabiliza pelos softwares instalados.</p>
+
+      <h3>3. Responsabilidade do Usuário</h3>
+      <p>O usuário é inteiramente responsável pela escolha dos aplicativos a instalar, pela conformidade com as licenças de cada software, pelo uso adequado dos programas instalados e por possíveis conflitos de software em seu sistema.</p>
+
+      <h3>4. Isenção de Garantias</h3>
+      <p>O WinMac é fornecido "como está", sem garantias expressas ou implícitas. Não nos responsabilizamos por danos diretos, indiretos ou incidentais decorrentes do uso do instalador ou dos softwares instalados por meio dele.</p>
+
+      <h3>5. Softwares de Terceiros</h3>
+      <p>Cada aplicativo instalado pelo WinMac possui seus próprios termos de uso e licença. O usuário deve consultar e aceitar os termos de cada software individualmente antes da instalação.</p>
+
+      <h3>6. Privacidade</h3>
+      <p>O WinMac não coleta, transmite nem armazena dados pessoais. Todas as operações são realizadas localmente no seu dispositivo.</p>
+
+      <h3>7. Alterações</h3>
+      <p>Estes termos podem ser atualizados a qualquer momento. O uso contínuo do WinMac após alterações implica a aceitação dos novos termos.</p>
+    </div>
+    <div class="termo-footer">
+      <button class="termo-ok-btn" onclick="closeTermo()">Entendido</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── Estado ──────────────────────────────────────
 const state = {
@@ -606,7 +783,12 @@ const APP_ICONS = {
 const CATALOG_FALLBACK = {"categories":[{"id":"browsers","name":"Navegadores","apps":[{"id":"chrome","name":"Google Chrome","description":"Google LLC","wingetId":"Google.Chrome","homebrewId":"google-chrome"}]},{"id":"remote","name":"Acesso Remoto","apps":[{"id":"anydesk","name":"AnyDesk","description":"AnyDesk Software GmbH","wingetId":"AnyDesk.AnyDesk","homebrewId":"anydesk"},{"id":"clickshare","name":"ClickShare App","description":"Barco","wingetId":null,"homebrewId":null,"bundled":true,"bundledWin":"clickshare-win.exe","bundledMac":"clickshare-mac.dmg"},{"id":"chrome-remote-desktop","name":"Google Remote Desktop","description":"Google LLC","wingetId":"Google.ChromeRemoteDesktopHost","homebrewId":null,"bundled":true,"bundledWin":null,"bundledMac":"chrome-remote-desktop-mac.dmg"}]},{"id":"security","name":"Segurança & Antivírus","apps":[{"id":"kaspersky","name":"Kaspersky Endpoint Security","description":"Kaspersky Lab","wingetId":null,"homebrewId":null,"bundled":true,"bundledWin":"kaspersky-win.exe","bundledMac":"kaspersky-mac.dmg"}]},{"id":"productivity","name":"Produtividade","apps":[{"id":"whatsapp","name":"WhatsApp","description":"WhatsApp LLC","wingetId":"9NKSQGP7F2NH","homebrewId":"whatsapp"}]},{"id":"media","name":"Mídia & Multimídia","apps":[{"id":"vlc","name":"VLC Media Player","description":"VideoLAN","wingetId":"VideoLAN.VLC","homebrewId":"vlc"},{"id":"gimp","name":"GIMP","description":"The GIMP Team","wingetId":"GIMP.GIMP","homebrewId":"gimp"}]},{"id":"utilities","name":"Utilitários","apps":[{"id":"7zip","name":"7-Zip","description":"Igor Pavlov · Mac: Keka","wingetId":null,"homebrewId":"keka"},{"id":"winrar","name":"WinRAR","description":"RARLab · Somente Windows","wingetId":"RARLab.WinRAR","homebrewId":null}]},{"id":"dev-tools","name":"Dev Tools","apps":[{"id":"vscode","name":"Visual Studio Code","description":"Microsoft Corporation","wingetId":"Microsoft.VisualStudioCode","homebrewId":"visual-studio-code"},{"id":"git","name":"Git","description":"The Git Development Community","wingetId":"Git.Git","homebrewId":"git"},{"id":"docker","name":"Docker Desktop","description":"Docker Inc","wingetId":"Docker.DockerDesktop","homebrewId":"docker"},{"id":"nodejs","name":"Node.js","description":"OpenJS Foundation","wingetId":"OpenJS.NodeJS","homebrewId":"node"},{"id":"python","name":"Python 3","description":"Python Software Foundation","wingetId":"Python.Python.3.12","homebrewId":"python"},{"id":"postman","name":"Postman","description":"Postman Inc","wingetId":"Postman.Postman","homebrewId":"postman"}]}]};
 
 async function getCatalog() {
-  if (window.api) return window.api.getAppsCatalog();
+  if (window.api) {
+    try {
+      const data = await window.api.getAppsCatalog();
+      if (data && data.categories && data.categories.length > 0) return data;
+    } catch {}
+  }
   try { const r = await fetch('./assets/apps-catalog.json'); if (r.ok) return r.json(); } catch {}
   return CATALOG_FALLBACK;
 }
@@ -797,6 +979,8 @@ async function cancelInstall() {
 
 function openConsole() { document.getElementById('consoleOverlay').classList.add('open'); }
 function closeConsole() { document.getElementById('consoleOverlay').classList.remove('open'); }
+function openTermo() { document.getElementById('termoOverlay').classList.add('open'); }
+function closeTermo() { document.getElementById('termoOverlay').classList.remove('open'); }
 
 let pct = 0;
 function onProgress(data) {
@@ -818,6 +1002,9 @@ function log(msg, type = 'log') {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+document.getElementById('termoOverlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeTermo();
+});
 </script>
 </body>
 </html>
