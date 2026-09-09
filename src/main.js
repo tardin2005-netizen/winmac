@@ -1,11 +1,13 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const installer = require('./utils/installer');
 
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const iconPath = path.join(__dirname, 'assets/icon.png');
+  const windowOpts = {
     width: 1000,
     height: 800,
     minWidth: 800,
@@ -15,9 +17,11 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false
-    },
-    icon: path.join(__dirname, 'assets/icon.png')
-  });
+    }
+  };
+  if (fs.existsSync(iconPath)) windowOpts.icon = iconPath;
+
+  mainWindow = new BrowserWindow(windowOpts);
 
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
